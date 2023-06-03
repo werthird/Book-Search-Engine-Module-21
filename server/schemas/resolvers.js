@@ -6,9 +6,12 @@ const { signToken } = require('../utils/auth');
 const resolvers = {
   Query: {
     // Find one user
-    me: async (_, { username }) => {
-      return User.findOne({ username }).populate('savedBooks');
-    }
+    me: async (_, _, context) => {
+      if (context.user) {
+        return User.findOne({ _id: context.user._id });
+      }
+      throw new AuthenticationError('You need to be logged in!');
+    },
   },
 
   Mutation: {
